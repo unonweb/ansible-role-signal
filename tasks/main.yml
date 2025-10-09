@@ -31,7 +31,7 @@
     # add repo
     - name: Add Signal repo
       become: true
-      register: add_repo
+      register: _add_repo
       ansible.builtin.deb822_repository:
         architectures: amd64
         name: signal
@@ -43,7 +43,7 @@
         signed_by: /etc/apt/keyrings/signal.gpg
 
   # apt-update
-  - when: add_repo.changed
+  - when: _add_repo.changed
     name: Update apt cache
     become: true
     ansible.builtin.apt:
