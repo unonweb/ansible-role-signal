@@ -1,4 +1,2 @@
 ---
-signal:
-  apt:
-    state: present
+signal_apt_state: present

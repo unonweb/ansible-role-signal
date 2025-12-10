@@ -1,7 +1,4 @@
 ---
-# NOTES
-# https://wiki.ubuntuusers.de/Signal_Desktop/
-
 - name: Signal role
   tags:
     - signal
@@ -31,7 +28,7 @@
     # add repo
     - name: Add Signal repo
       become: true
-      register: _add_repo
+      register: __signal_add_repo
       ansible.builtin.deb822_repository:
         architectures: amd64
         name: signal
@@ -43,15 +40,15 @@
         signed_by: /etc/apt/keyrings/signal.gpg
 
   # apt-update
-  - when: _add_repo.changed
+  - when: __signal_add_repo.changed
     name: Update apt cache
     become: true
     ansible.builtin.apt:
       update_cache: true
 
   # install
-  - name: Apt {{ signal.apt.state }} signal
+  - name: Apt signal-desktop -> {{ signal_apt_state }}
     become: true
     ansible.builtin.apt:
-      state: "{{ signal.apt.state }}"
       name: signal-desktop
+      state: "{{ signal_apt_state }}"
