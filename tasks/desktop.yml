@@ -1,0 +1,29 @@
+---
+- when: signal_desktop_src != None
+  block:
+
+  # set facts
+  - name: Handle possible URL {{ signal_desktop_src }}
+    ansible.builtin.set_fact:
+      __signal_desktop_src_is_url: "{{ signal_desktop_src is match('^https?://') }}"
+      # If it's a URL, save it to a temp dir; otherwise, use the local path
+      __signal_desktop_final_src: "{{ '/tmp/signal_downloaded.desktop' if (signal_desktop_src is match('^https?://')) else signal_desktop_src }}"
+
+  # download
+  - when: __signal_desktop_src_is_url
+    name: Download desktop file from {{ signal_desktop_src }}
+    ansible.builtin.get_url:
+      url: "{{ signal_desktop_src }}"
+      dest: "{{ __signal_desktop_final_src }}"
+      mode: 0644
+
+  # copy
+  - name: Copy desktop file signal.desktop
+    become: true
+    ansible.builtin.copy:
+      src: "{{ __signal_desktop_final_src }}"
+      dest: "{{ signal_desktop_dst }}"
+      owner: "{{ signal_user if signal_desktop_dst.startswith('/home/') else 'root' }}"
+      group: "{{ signal_user if signal_desktop_dst.startswith('/home/') else 'root' }}"
+      mode: u=rw,g=,o=r
+      remote_src: "{{ __signal_desktop_src_is_url }}"

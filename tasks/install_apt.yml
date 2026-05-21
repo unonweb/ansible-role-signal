@@ -1,0 +1,63 @@
+---
+# check if installed
+- name: Check apt if signal is already installed
+  become: true
+  ansible.builtin.apt:
+    name: signal-desktop
+    state: present
+  check_mode: true # outputs "changed": false || "changed": true
+  ignore_errors: true
+  register: __signal_is_installed
+
+- ansible.builtin.debug:
+    msg: "{{ __signal_is_installed }}"
+
+# apt install
+- when: __signal_is_installed.failed == true
+  block:
+
+  # mkdir
+  - name: Mkdir /etc/apt/keyrings 
+    become: true
+    ansible.builtin.file:
+      path: /etc/apt/keyrings
+      mode: u=rwx,g=rx,o=rx
+      state: directory
+
+  # repo key
+  - name: Copy repo key
+    become: true
+    ansible.builtin.copy:
+      src: signal-desktop-keyring.gpg
+      dest: /etc/apt/keyrings/signal.gpg
+      owner: root
+      group: root
+      mode: u=rw,g=r,o=r
+
+  # add repo
+  - name: Add Signal repo
+    become: true
+    register: __signal_add_repo
+    ansible.builtin.deb822_repository:
+      architectures: amd64
+      name: signal
+      types: deb
+      uris: https://updates.signal.org/desktop/apt
+      suites: xenial
+      components: main
+      enabled: yes
+      signed_by: /etc/apt/keyrings/signal.gpg
+
+  # apt-update
+  - when: __signal_add_repo.changed
+    name: Update apt cache
+    become: true
+    ansible.builtin.apt:
+      update_cache: true
+  
+# install
+- name: Apt signal-desktop -> {{ signal_apt_state }}
+  become: true
+  ansible.builtin.apt:
+    name: signal-desktop
+    state: "{{ signal_apt_state }}"
