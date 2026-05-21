@@ -1,0 +1,32 @@
+[Unit]
+Description=Signal [Sandboxed]
+
+[Service]
+Type=exec
+ExecStart=/usr/bin/signal-desktop
+StandardOutput=journal
+SyslogIdentifier=%N
+
+# SANDBOX
+# -------
+# Prevents the process (or any exploit) from ever gaining higher privileges
+NoNewPrivileges=true
+# Prevents execution of system calls that alter the execution domain
+LockPersonality=true
+# Prevents the app from requesting realtime scheduling execution
+RestrictRealtime=true
+# Ensures the app only runs system calls native to your CPU architecture
+SystemCallArchitectures=native
+# Isolates the session's kernel keyring from other user processes
+KeyringMode=private
+
+# RESOURCES
+# ---------
+# Hard ceiling: If the app hits 3GB, the kernel kills it to protect the host system
+MemoryMax=3G
+# Soft warning
+MemoryHigh=2G
+# Limit the app to a maximum of 2 full CPU cores' worth of processing power
+CPUQuota=200%
+# Lower the scheduling priority so background tasks (like sync) don't stutter your mouse cursor
+Nice=10
