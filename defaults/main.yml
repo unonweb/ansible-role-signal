@@ -1,2 +1,17 @@
 ---
+signal_user:
 signal_apt_state: present
+signal_desktop_src:
+signal_desktop_dst: /usr/share/applications/signal-desktop.desktop
+# systemd (user)
+signal_systemd_user_dir: /etc/systemd/user # "/home/{{ thunderbird_systemd_user }}/.config/systemd/user"
+signal_systemd_copy: []
+signal_systemd_template: []
+signal_systemd_reset: []
+signal_systemd_overrides: []
+signal_systemd_start: []
+signal_systemd_stop: []
+signal_systemd_enable: []
+signal_systemd_disable: []
+signal_systemd_mask: []
+signal_systemd_unmask: []
