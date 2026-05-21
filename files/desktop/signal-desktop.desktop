@@ -1,0 +1,17 @@
+[Desktop Entry]
+Name=Signal
+Exec=/usr/local/bin/sandboxed-signal-desktop.sh
+signal-desktop
+Terminal=false
+Type=Application
+Icon=signal-desktop
+StartupWMClass=Signal
+Comment=Private messaging from your desktop
+MimeType=x-scheme-handler/sgnl;x-scheme-handler/signalcaptcha;
+Categories=Network;InstantMessaging;Chat;
+Actions=no-sandbox;
+
+[Desktop Action no-sandbox]
+Exec=/opt/Signal/signal-desktop %U
+Name=Run without sandbox
+Name[de]=Ohne Sandbox starten

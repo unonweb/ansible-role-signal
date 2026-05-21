@@ -1,0 +1,21 @@
+[Desktop Entry]
+Name=Signal Messenger
+Exec=systemctl --user start signal-sandboxed.service
+signal-desktop
+Terminal=false
+Type=Application
+Icon=signal-desktop
+StartupWMClass=Signal
+Comment=Private messaging from your desktop
+MimeType=x-scheme-handler/sgnl;x-scheme-handler/signalcaptcha;
+Categories=Network;InstantMessaging;Chat;
+Actions=No-sandbox;
+
+[Desktop Action No-Sandbox]
+Exec=/usr/bin/signal-desktop %U
+Name=Run without sandbox
+Name[de]=Ohne Sandbox starten
+
+[Desktop Action Sandbox]
+Name=Run with addional systemd sandbox
+Exec=systemctl --user start thunderbird-sandboxed.service
