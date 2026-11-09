@@ -1,12 +1,9 @@
 ---
 - name: Signal role
-  tags:
-    - signal
+  tags: [role-signal]
   block:
 
   # apt
-  - ansible.builtin.import_tasks: install_apt.yml
+  - ansible.builtin.import_tasks: signal-install-apt.yml
   # desktop
-  - ansible.builtin.import_tasks: desktop.yml
-  # systemd user
-  - ansible.builtin.import_tasks: systemd_user.yml
+  - ansible.builtin.import_tasks: signal-desktop.yml

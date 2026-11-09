@@ -1,5 +1,6 @@
 ---
-- when: signal_desktop_src != None
+- tags: [role-signal-desktop]
+  when: signal_desktop_src != None
   block:
 
   # set facts

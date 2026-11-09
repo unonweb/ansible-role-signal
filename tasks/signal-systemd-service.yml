@@ -1,0 +1,46 @@
+---
+- tags: [role-signal-systemd-service]
+  when: signal_systemd_sandbox != ""
+  block:
+
+  # assertions
+  - name: Assertions
+    ansible.builtin.assert:
+      that:
+      - signal_user != ""
+
+  # check user
+  - name: Check if user exists {{ signal_user }}
+    command: "getent passwd {{ signal_user }}"
+    changed_when: false
+    
+  # template
+  - name: Template user unit files {{ signal_systemd_template }}
+    become: true
+    notify: systemctl --user daemon-reload
+    ansible.builtin.template:
+      src: "{{ item }}" # -> my-unit.service.j2
+      dest: "{{ signal_systemd_user_dir }}/{{ item | basename | replace('.j2', '') }}" # un.machines.service.j2 -> un.machines.service
+      owner: "{{ 'root' if signal_systemd_user_dir.startswith('/etc') else signal_systemd_user }}"
+      group: "{{ 'root' if signal_systemd_user_dir.startswith('/etc') else signal_systemd_user }}"
+      mode: u=rw,g=r,o=r
+  
+  # enable
+  - when: signal_systemd_enable | length > 0
+    name: systemctl --system enable {{ signal_systemd_enable }}
+    become: true
+    loop: "{{ signal_systemd_enable }}"
+    ansible.builtin.systemd_service:
+      scope: system
+      enabled: true
+      name: "{{ item }}"
+
+  # disable
+  - when: signal_systemd_disable | length > 0
+    name: systemctl --system disable {{ signal_systemd_disable }}
+    become: true
+    loop: "{{ signal_systemd_disable }}"
+    ansible.builtin.systemd_service:
+      scope: system
+      enabled: false
+      name: "{{ item }}"
